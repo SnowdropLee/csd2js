@@ -16,11 +16,10 @@ const ExportModule = require('./JSmodule/ExportModule');
 const ImportModule = require('./JSmodule/ImportModule');
 const AttrModule = require('./JsModule/AttrModule')
 const CSDExportModule = require('./JsModule/CSDExportModule')
+const CSDImportModule = require('./JsModule/CSDImportModule')
 
 //生成csd文件内容
 function CSD2String(url) {
-    console.log('url:' + url)
-
     //读csd文件
     var data = JSON.parse(fs.readFileSync(url))
     // console.log(data)
@@ -121,7 +120,7 @@ function CSD2String(url) {
                 // console.log(xmpath)
                 // console.log(path.resolve('/teller-messages/xm/PC_Args.xm'))
                 // console.log(path.resolve(item))
-            } 
+            }
             // else {
             //     xmpath = './xm/'
             // }
@@ -140,53 +139,159 @@ function CSD2String(url) {
     })
 
     console.group('dataChildren')
-        console.dir(dataChildren)
+    console.dir(dataChildren)
     console.groupEnd()
 
     dataChildren.forEach(item => {
-        console.log(item)
+        //分结构生成js文件
+        var patharr = csdFile.split('/')
+        patharr.remove('csd')
+        var xmpath = patharr.join('/')
+        xmpath += '/xm'
+        // console.log('xmpath-------------'+xmpath)
+        var xmpatharr = xmpath.split('/')
+        var itemarr = item.split('/') // [ 'E:', 'testcsd', 'teller-messages', 'xm', 'PC_Args.xm' ]
+        itemarr.remove(path.basename(item))
+        if (itemarr[itemarr.length - 1] !== 'xm') { //路径不是xm , 新建文件夹，生成文件
+            // console.group('路径不是xm')
+            // console.log(item)
+            // console.log(itemarr)
+            // console.groupEnd()
+            for (var i = 0; i < xmpatharr.length; i++) {
+                itemarr.remove(xmpatharr[i])
+            }
+            // console.log(itemarr)
+            if (fs.existsSync(arg[1] + '/' + itemarr.join('/'))) { //有文件夹，创建文件
+                var STR = XM2String(item)
+                fs.writeFileSync(arg[1] + '/' + itemarr.join('/') + '/' + path.basename(item).split('.')[0] + '.js', STR)
+                console.log(path.basename(item) + '.js创建成功')
 
-        // console.log(item)
-        //处理文件路径
-        // itemPath = './xm/' + item + '.xm'
-        // console.log(itemPath)
+            } else { //没有文件夹,新建文件夹，创建文件                
+                var STR = XM2String(item)
+                // console.log(arg[1]+'/'+itemarr.join('/'))
+                fs.mkdirSync(arg[1] + '/' + itemarr.join('/'))
+                fs.writeFileSync(arg[1] + '/' + itemarr.join('/') + '/' + path.basename(item).split('.')[0] + '.js', STR)
+                console.log(path.basename(item) + '.js创建成功')
+            }
+        } else { //路径是xm  直接生成文件
+            // console.log(item)
+            // console.log(2)
 
-        //处理dataChildren
-        // console.log(1111)
-        // console.log(item)
-        // console.log(222)
-        var arr = readXmFile(item)
+            //生成js文件内容
+            var str = XM2String(item)
+            //生成js文件
+            writeFile(path.basename(item).split('.')[0], str)
+        }
 
-        // console.dir(arr)
-
-
-
-        //生成js文件内容
-        var str = XM2String(item)
-        // console.log(str)
-        // console.log(333)
-
-        //生成js文件
-        writeFile(path.basename(item).split('.')[0], str)
     })
 
-
+    // ********************************************************************************************************************************************************
     //处理importlist,只获取.xm文件,只保留名称
     var arr = []
+    var nodir = []
+    var hasdir = []
     importlist.forEach(item => {
-        if (path.extname(item) === '.xm') {
-            item = path.basename(item).split('.')[0]
-            // console.log(item)
-            arr.push(item)
+        //划分结构
+        // console.log(item)
+        // ['teller-messages/xm/PC_Args.xm',
+        //     'teller-messages/xm/IP_INQ_IP_TRN_I.xm',
+        //     'teller-messages/xm/XXX/x001.xm',
+        //     'teller-messages/xm/XXX/zzz.xm',
+        //     'teller-messages/xm/IP_INQ_IP_TRN_O.xm'
+        // ]
+        if (fs.statSync(csdFile).isDirectory()) { //参数是文件夹
+            var patharr = csdFile.split('/')
+            patharr.remove('csd')
+            patharr.push('xm')
+
+            var pathurl = patharr.join('/')
+            // console.log(pathurl)
+            // console.group('patharr')
+            //     console.log(patharr) [ 'E:', 'testcsd', 'teller-messages', 'xm' ]
+
+            // console.groupEnd()
+
+            var itemarr = item.split('/')
+            // itemarr.remove(path.basename(item))
+
+            var arre = concat(patharr, itemarr)
+            // console.group('arre')
+            // console.dir(arre) [ 'E:', 'testcsd', 'teller-messages', 'xm', 'PC_Args.xm' ]
+
+            // console.groupEnd()
+
+            for (var i = 0; i < patharr.length; i++) {
+                arre.remove(patharr[i])
+            }
+
+            if (arre.length > 1) {
+                hasdir.push(arre.join('/'))
+                // console.log(arre)
+            } else {
+                nodir.push(...arre)
+                
+            }
+
+            // arr.push(itempath)
+
+        } else { //参数是文件
+            var patharr = csdFile.split('/')
+            patharr.remove(path.basename(item))
+            patharr.remove('csd')
+            patharr.push('xm')
+            var itemarr = item.split('/')
+            var arre = concat(patharr, itemarr)
+            for (var i = 0; i < patharr.length; i++) {
+                arre.remove(patharr[i])
+            }
+
+            if (arre.length > 1) {
+                hasdir.push(arre.join('/'))
+                // console.log(arre)
+            } else {
+                nodir.push(...arre)
+                
+            }
         }
+
+
+        // if (path.extname(item) === '.xm') {
+        //     item = path.basename(item).split('.')[0]
+        //     // console.log(item)
+        //     arr.push(item)
+        // }
+        
+
         return arr
     })
+    hasdir.forEach(i=>{
+        arr[path.basename(i).split('.')[0]] = i
+    })
+    arr.push(...nodir)
+    console.log(arr)
+
+    arr.forEach((val,key)=>{
+        // console.log(key)
+        // console.log(val)
+    })
+
+    // console.group('111111111')
+    //     console.log(arr)
+    // console.groupEnd()
 
     // console.log(importlist)
-    var importmodule = new ImportModule()
-    importmodule.setList(arr)
+
+    // ********************************************************************************************************************************************************
+    var csdimportmodule = new CSDImportModule()
+
+
+    csdimportmodule.setList(arr)
+
+    // console.group('importmodule.importList')
     // console.log(importmodule.importList)
-    var importStr = importmodule.toTemplete()
+    // console.groupEnd()
+
+    var importStr = csdimportmodule.toTemplete()
     // console.log(importStr)
 
     // var exportmodule = new ExportModule()
@@ -274,20 +379,33 @@ function readXmFile(filepath) {
         // console.log(item)
 
         if (csdFile) {
-            var patharr = csdFile.split('/')
-            patharr.remove('csd')
-           
-            var xmpath = patharr.join('/') + '/xm/'
+            if (fs.statSync(csdFile).isDirectory()) { //是文件夹
+                var patharr = csdFile.split('/')
+                patharr.remove('csd')
+                var xmpath = patharr.join('/') + '/xm/'
+                item = xmpath + path.basename(item)
+            } else { //是文件
+                var patharr = csdFile.split('/')
+                patharr.remove('csd')
+                patharr.remove(patharr[patharr.length - 1])
 
-            item = xmpath + path.basename(item)
-            // console.log(22222222222222)
-            // console.log(item)
+                // console.group('patharr')
+                //     console.dir(patharr)
+                // console.groupEnd()
+
+                var itemarr = item.split('//')[1].split('/')
+                var itempatharr = concat(patharr, itemarr)
+
+                // console.dir(itempatharr)
+                item = itempatharr.join('/')
+            }
 
             // item = path.resolve('/' + item.split('//')[1])
             // item = './xm/' + path.basename(item)
-        } else {
-            item = './xm/' + path.basename(item)
         }
+        // else {
+        //     item = './xm/' + path.basename(item)
+        // }
         if (path.extname(item) === '.xm') {
             xmFilearr = xmFilearr.concat(readXmFile(item))
 
@@ -301,6 +419,7 @@ function readXmFile(filepath) {
 
 //生成xm文件对应js文件内容
 function XM2String(filePath) {
+    // console.log(filePath)
     var data = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     var xmmodule = new XmModule()
     xmmodule.setXmName(data.xmName)
@@ -477,10 +596,11 @@ if (arg[0] && arg[1]) { //有参数
         })
     } else { // 第一个参数为文件
         console.log('读取文件:' + csdFile)
+        console.log('目标路径：' + targetPath)
         var str = CSD2String(csdFile)
         // console.log(str)
         // targetPath = targetPath.split('/')[0]+'/'+ path.basename(csdFile).split('.')[0]
-        console.log('目标路径：' + targetPath)
+
         // console.log(targetPath+'/'+path.basename(csdFile).split('.')[0]+'.js')
         CSDcreate(targetPath + '/' + path.basename(csdFile).split('.')[0], str)
         console.log(path.basename(csdFile).split('.')[0] + '.js创建成功')
