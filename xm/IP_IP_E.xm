@@ -1,0 +1,31 @@
+{
+  "xmName": "IP_IP_E",
+  "caption": "",
+  "description": "",
+  "dataBasket": [
+    "data://teller-messages/xm/x001.xm",
+    "data://data/dataResource/农行柜面/客户信息/COD_FN_ENT.ade",
+    "data://data/dataResource/农行柜面/客户信息/通讯信息/COD_PRO_COD.ade",
+    "data://data/dataResource/农行柜面/客户信息/通讯信息/IND_RES.ade",
+    "data://data/dataResource/农行柜面/客户信息/ID_INTL_IP.ade",
+    "data://data/dataResource/农行柜面/客户信息/NAM_IP.ade",
+    "data://data/dataResource/农行柜面/客户信息/COD_EXTID_IP_TYP.ade",
+    "data://data/dataResource/农行柜面/客户信息/ID_EXT_IP.ade",
+    "data://data/dataResource/农行柜面/客户信息/COD_RSN_REG_IP.ade",
+    "data://data/dataResource/农行柜面/客户信息/DATE_BRTH_CSTN.ade",
+    "data://data/dataResource/农行柜面/客户信息/DATE_END_IP.ade",
+    "data://data/dataResource/农行柜面/客户信息/COD_IP_IREG_STS.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_NTCE.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_CUST.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_AD_RECV.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_MK_RECV.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_PVC.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_PTTL_CUST.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_OTH_RLN_EXIST.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_BLCK.ade",
+    "data://data/dataResource/农行柜面/客户信息/IND_ATTN.ade",
+    "data://data/dataResource/农行柜面/客户信息/DATE_REG.ade",
+    "data://data/dataResource/农行柜面/客户信息/NUM_ADDR_IP.ade",
+    "data://data/dataResource/农行柜面/客户信息/COD_MSK_IP.ade"
+  ]
+}
