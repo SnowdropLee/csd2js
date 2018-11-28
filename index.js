@@ -80,10 +80,12 @@ function CSD2String(url) {
     importlist.forEach(function (e, i, importlist) {
         importlist[i] = e.split('//')[1]
     });
+
+    /*
     console.group('CSD2String------importlist!!!!!!!!!!')
         console.dir(importlist)
     console.groupEnd()
-
+    */
 
     // console.log('importlist:'+importlist)
 
@@ -122,6 +124,7 @@ function CSD2String(url) {
             //     xmpath = './xm/'
             // }
             // item = xmpath + path.basename(item)
+            // console.log(item)
             dataChildren = dataChildren.concat(readXmFile(item))
 
 
@@ -135,9 +138,12 @@ function CSD2String(url) {
         }
     })
 
-    console.group('dataChildren')
-    console.dir(dataChildren)
-    console.groupEnd()
+
+
+    // console.group('dataChildren')
+    // console.dir(dataChildren)
+    // console.groupEnd()
+
 
     dataChildren.forEach(item => {
         //分结构生成js文件
@@ -182,7 +188,6 @@ function CSD2String(url) {
 
     })
 
-    // ********************************************************************************************************************************************************
     //处理importlist,只获取.xm文件,只保留名称
     // var arr = []
     // var nodir = []
@@ -190,100 +195,79 @@ function CSD2String(url) {
     var csdimportmodule = new CSDImportModule()
 
     importlist.forEach(item => {
-        if(path.extname(item)==='.xm'){
+        if (path.extname(item) === '.xm') {
             //划分结构
-        // console.log(item)
-        // ['teller-messages/xm/PC_Args.xm',
-        //  'teller-messages/xm/IP_INQ_IP_TRN_I.xm',
-        //  'teller-messages/xm/XXX/x001.xm',
-        //  'teller-messages/xm/XXX/zzz.xm',
-        //  'teller-messages/xm/IP_INQ_IP_TRN_O.xm'
-        // ]
-        if (fs.statSync(csdFile).isDirectory()) { //参数是文件夹
-            // console.log(csdFile) E:/testcsd/teller-messages/csd
-            var patharr = csdFile.split('/')
-            patharr.remove('csd') //E:/testcsd/teller-messages
-            // patharr.push('xm')
-            var itemarr = item.split('/')
-            var arre = concat(patharr, itemarr)
-            var key = path.basename(item).split('.')[0]
+            if (fs.statSync(csdFile).isDirectory()) { //参数是文件夹
+                // console.log(csdFile) E:/testcsd/teller-messages/csd
+                var patharr = csdFile.split('/')
+                patharr.remove('csd') //E:/testcsd/teller-messages
+                // patharr.push('xm')
+                var itemarr = item.split('/')
+                var arre = concat(patharr, itemarr)
+                var key = path.basename(item).split('.')[0]
                 // console.log(key)
-            for(var i=0;i<patharr.length;i++){
-                arre.remove(patharr[i])
-            }
-            // console.group('arre')
-            //     console.log(arre)
-            // console.groupEnd()
-            var arrestr = arre.join('/')
-            arrestr=arrestr.replace(path.basename(item),'')
-            if(arrestr ==='xm/'){//如果是xm根录下
-                var val = key
-                csdimportmodule.setList(val,key)
-                // console.log(csdimportmodule.importList)
-            }else{//如果不再xm根目录下
-                var str = arrestr+path.basename(item)
-                // console.log(str) xm/XXX/zzz.xm
-                var strarr = str.split('/')
-                strarr.remove('xm')
-                str = strarr.join('/')
-                var val = str.replace('.xm','')
-                // console.log(val)
-                csdimportmodule.setList(key,val)
-                // console.log(csdimportmodule.importList)
-            }
-        } else { //参数是文件
-            // console.log(csdFile) E:/testcsd/teller-messages/csd/csd-csd.csd
+                for (var i = 0; i < patharr.length; i++) {
+                    arre.remove(patharr[i])
+                }
+                // console.group('arre')
+                //     console.log(arre)
+                // console.groupEnd()
+                var arrestr = arre.join('/')
+                arrestr = arrestr.replace(path.basename(item), '')
+                if (arrestr === 'xm/') { //如果是xm根录下
+                    var val = key
+                    csdimportmodule.setList(val, key)
+                    // console.log(csdimportmodule.importList)
+                } else { //如果不再xm根目录下
+                    var str = arrestr + path.basename(item)
+                    // console.log(str) xm/XXX/zzz.xm
+                    var strarr = str.split('/')
+                    strarr.remove('xm')
+                    str = strarr.join('/')
+                    var val = str.replace('.xm', '')
+                    // console.log(val)
+                    csdimportmodule.setList(key, val)
+                    // console.log(csdimportmodule.importList)
+                }
+            } else { //参数是文件
+                // console.log(csdFile) E:/testcsd/teller-messages/csd/csd-csd.csd
 
-            var patharr = csdFile.split('/')
-            patharr.remove(path.basename(csdFile))
-            patharr.remove('csd')
-            // console.log(patharr)
-            var itemarr = item.split('/')
-            var arre = concat(patharr, itemarr)
-            // console.log(arre)
-            var key = path.basename(item).split('.')[0]
+                var patharr = csdFile.split('/')
+                patharr.remove(path.basename(csdFile))
+                patharr.remove('csd')
+                // console.log(patharr)
+                var itemarr = item.split('/')
+                var arre = concat(patharr, itemarr)
+                // console.log(arre)
+                var key = path.basename(item).split('.')[0]
                 // console.log(key)
-            for(var i=0;i<patharr.length;i++){
-                arre.remove(patharr[i])
+                for (var i = 0; i < patharr.length; i++) {
+                    arre.remove(patharr[i])
+                }
+                // console.group('arre')
+                //     console.log(arre)
+                // console.groupEnd()
+                var arrestr = arre.join('/')
+                arrestr = arrestr.replace(path.basename(item), '')
+                if (arrestr === 'xm/') { //如果是xm根录下
+                    var val = key
+                    csdimportmodule.setList(val, key)
+                    // console.log(csdimportmodule.importList)
+                } else { //如果不再xm根目录下
+                    var str = arrestr + path.basename(item)
+                    // console.log(str) xm/XXX/zzz.xm
+                    var strarr = str.split('/')
+                    strarr.remove('xm')
+                    str = strarr.join('/')
+                    var val = str.replace('.xm', '')
+                    // console.log(val)
+                    csdimportmodule.setList(key, val)
+                    // console.log(csdimportmodule.importList)
+                }
             }
-            // console.group('arre')
-            //     console.log(arre)
-            // console.groupEnd()
-            var arrestr = arre.join('/')
-            arrestr=arrestr.replace(path.basename(item),'')
-            if(arrestr ==='xm/'){//如果是xm根录下
-                var val = key
-                csdimportmodule.setList(val,key)
-                // console.log(csdimportmodule.importList)
-            }else{//如果不再xm根目录下
-                var str = arrestr+path.basename(item)
-                // console.log(str) xm/XXX/zzz.xm
-                var strarr = str.split('/')
-                strarr.remove('xm')
-                str = strarr.join('/')
-                var val = str.replace('.xm','')
-                // console.log(val)
-                csdimportmodule.setList(key,val)
-                // console.log(csdimportmodule.importList)
-            }
-        }
 
         }
-        
-        // if (path.extname(item) === '.xm') {
-        //     item = path.basename(item).split('.')[0]
-        //     // console.log(item)
-        //     arr.push(item)
-        // }        
-
     })
-    
-
-    // ********************************************************************************************************************************************************
-
-    
-    
-    // csdimportmodule.setList(arr)
 
 
     var importStr = csdimportmodule.toTemplete()
@@ -294,20 +278,9 @@ function CSD2String(url) {
     // console.log(importmodule.importList)
     // console.groupEnd()
 
-    
-    
 
     // var importStr = importmodule.toTemplete()
     // console.log(importStr)
-
-    // var exportmodule = new ExportModule()
-    // exportmodule.setClassName(csmodule.csdName)
-    // exportmodule.setList(arr)
-    // exportmodule.setAttrList(csdAttrs)
-    // var expStr = exportmodule.toTemplete()
-
-
-
 
     //设置csdexpmodule
     var csdexpmodule = new CSDExportModule()
@@ -343,10 +316,7 @@ function CSD2String(url) {
 
     var expStr = csdexpmodule.toTemplete()
     // console.log(csdexpmodule.toTemplete())
-
-
     // console.log(data.response.body)
-
     // console.log(expStr)  
     var explanStr = `
     /** 
@@ -355,8 +325,6 @@ function CSD2String(url) {
      * @classcap ${csmodule.description}
      */\n    
     `
-
-
     var csdData = ''
     csdData += importStr
     csdData += explanStr
@@ -373,6 +341,8 @@ function CSDcreate(csdFileName, csdData) {
 
 //递归读取xm文件，返回要生成js文件的数组
 function readXmFile(filepath) {
+    // console.log(filepath) E:/testcsd/teller-messages//xm/XXX/x001.xm
+
     var xmFilearr = []
     var data = JSON.parse(fs.readFileSync(filepath))
     var FileName = path.basename(filepath).split('.')[0]
@@ -383,27 +353,44 @@ function readXmFile(filepath) {
     data.dataBasket.forEach(item => {
         // console.log('data.dataBasket!!!!!!!!!!!!!!111')
         // console.log(item)
-
+        // data://teller-messages/xm/XXX/x002.xm
+        // data://data/dataResource/农行柜面/客户信息/TXT_COMM_AREA_IN.ade
+        // data://data/dataResource/公共类/名词描述/Abst.ade
         if (csdFile) {
-            if (fs.statSync(csdFile).isDirectory()) { //是文件夹
-                var patharr = csdFile.split('/')
-                patharr.remove('csd')
-                var xmpath = patharr.join('/') + '/xm/'
-                item = xmpath + path.basename(item)
-            } else { //是文件
-                var patharr = csdFile.split('/')
-                patharr.remove('csd')
-                patharr.remove(patharr[patharr.length - 1])
+            if (fs.statSync(csdFile).isDirectory()) { //是文件夹 
+                // console.log('是文件夹')
+                var patharr = csdFile.split('/') //E:/testcsd/teller-messages/csd
+                patharr.remove('csd') //E:/testcsd/teller-messages
 
+                var itempath = item.split('//')[1]
+                var itempatharr = itempath.split('/') //teller-messages/xm/XXX/x002.xm
+
+                var conarr = concat(patharr, itempatharr) //E:/testcsd/teller-messages/xm/XXX/x002.xm
+                item = conarr.join('/')
+                // console.log(item)
+            } else { //是文件
+                // console.log('是文件')
+                var patharr = csdFile.split('/') //E:/testcsd/teller-messages/csd/csd-csd.csd
+                patharr.remove(path.basename(csdFile)) //E:/testcsd/teller-messages/csd
+                patharr.remove('csd') //[ 'E:', 'testcsd', 'teller-messages' ]
+
+
+                var itempath = item.split('//')[1]
+                var itempatharr = itempath.split('/') //
+                var conarr = concat(patharr, itempatharr)
+                item = conarr.join('/')
+
+                // console.log(item)
+                // patharr.remove(patharr[patharr.length - 1])
                 // console.group('patharr')
                 //     console.dir(patharr)
                 // console.groupEnd()
 
-                var itemarr = item.split('//')[1].split('/')
-                var itempatharr = concat(patharr, itemarr)
+                // var itemarr = item.split('//')[1].split('/')
+                // var itempatharr = concat(patharr, itemarr)
 
-                // console.dir(itempatharr)
-                item = itempatharr.join('/')
+                // // console.dir(itempatharr)
+                // item = itempatharr.join('/')
             }
 
             // item = path.resolve('/' + item.split('//')[1])
@@ -419,13 +406,13 @@ function readXmFile(filepath) {
         // 重置item路径
 
     })
-
+    // console.dir(xmFilearr)
     return xmFilearr
 }
 
 //生成xm文件对应js文件内容
 function XM2String(filePath) {
-    // console.log(filePath)
+
     var data = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     var xmmodule = new XmModule()
     xmmodule.setXmName(data.xmName)
@@ -440,27 +427,64 @@ function XM2String(filePath) {
     var importarr = []
     var attrmodule = new AttrModule
     var attrarr = []
+
+
+    // console.log(filePath) E:/testcsd/teller-messages/xm/PC_Args.xm
+
+    // console.log(xmmodule.dataBasket)
+    // [ 'data://teller-messages/xm/zzz.xm',
+    //   'data://data/dataResource/农行柜面/系统信息/transCode.ade',
+    //   'data://data/dataResource/农行柜面/系统信息/trnName.ade',
+    //   'data://data/dataResource/农行柜面/系统信息/viewInName.ade' ]
+
+
     xmmodule.dataBasket.forEach((item) => {
-        switch (path.extname(item)) {
-            case '.xm':
-                // console.log(item)
-                importarr.push(path.basename(item).split('.')[0])
-                break;
-            case '.ade':
-                // console.log(item)
-                attrarr.push(path.basename(item).split('.')[0])
-                // console.log(attrarr)
+        // console.log(item)
+        if(path.extname(item)==='.xm'){//后缀是xm
+            // console.log(item)
+            // var pathstr = item.replace('data://teller-messages/xm/','')
+            // pathstr = pathstr.split('.xm')[0]
+            // // console.log(pathstr)
+            // console.log(`import ${path.basename(item).split('.')[0]} from './${pathstr}'`)
+            importarr.push(item)
+            // console.log(importarr)
+        }else{//后缀是ade
+            attrarr.push(path.basename(item).split('.')[0])
         }
     })
+
     importmodule.setList(importarr)
+    // console.log(importmodule.importList)
+    // console.group('MMMMMMMMMMMMMMMM')
+    // console.log(m)
+    // console.groupEnd()
+    // console.log(111)
+    // console.log(importarr)
+    // console.log(111)
     attrmodule.setAttrList(attrarr)
+    // console.log(attrarr)
     // console.log(importmodule)
     var importStr = importmodule.toTemplete()
-    // console.log(importStr)        
+    // console.log(importStr)
+    // var  importStr=""
+    // importarr.forEach(item=>{
+    //     importStr+=item
+    //     return importStr
+    // })
+    // console.log(importStr)
+
+    //处理js文件属性名称
+    var nameArr = []
+    importmodule.importList.forEach(item=>{
+        // console.log(item)
+        nameArr.push(path.basename(item).split('.')[0])
+        return nameArr
+    })
+
     var exportmodule = new ExportModule()
     exportmodule.setClassName(path.basename(filePath).split('.')[0])
     // console.log(importmodule.importList)
-    exportmodule.setList(importmodule.importList)
+    exportmodule.setList(nameArr)
     exportmodule.setAttrList(attrmodule.attrList)
     var exportStr = exportmodule.toTemplete()
     // console.log(exportStr)
@@ -532,6 +556,7 @@ function formatName(name) {
 
 }
 
+//数组合并去重
 function concat(arr1, arr2) {
     var arr = arr1.concat();
     //或者使用slice()复制，var arr = arr1.slice(0)
@@ -542,7 +567,7 @@ function concat(arr1, arr2) {
 }
 
 
-
+//获取名称
 function path2Name(filepath) {
     var name = path.basename(filepath).split('.')[0]
     return name
@@ -555,15 +580,12 @@ var pathObj = { //文件对象
     outdir: null
 }
 
-
-
 Array.prototype.indexOf = function (val) {
     for (var i = 0; i < this.length; i++) {
         if (this[i] == val) return i;
     }
     return -1;
 }
-
 Array.prototype.remove = function (val) {
     var index = this.indexOf(val);
     if (index > -1) {
@@ -572,12 +594,9 @@ Array.prototype.remove = function (val) {
 }
 
 
-
-
 let arg = process.argv.splice(2)
 // console.log(arg)
 // console.log(path.resolve())
-
 
 if (arg[0] && arg[1]) { //有参数
     pathObj.indir = arg[0]

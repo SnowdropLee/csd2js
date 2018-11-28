@@ -1,3 +1,8 @@
+const fs = require('fs');
+
+const path = require('path');
+
+
 class ImportModule {
     constructor() {
         this.importList 
@@ -12,8 +17,12 @@ class ImportModule {
     }
     toTemplete() {
         var str = ''
+        
         this.importList.forEach((item) => {
-            str += `import ${item} from "./${item}";\n`
+            // data://teller-messages/xm/zzz.xm
+            var pathstr = item.replace('data://teller-messages/xm/','')
+            pathstr = pathstr.split('.xm')[0]
+            str +=`import ${path.basename(item).split('.')[0]} from './${pathstr}';\n`
         })
         // console.log(str)
         return str
