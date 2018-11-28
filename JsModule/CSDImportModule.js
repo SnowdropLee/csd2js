@@ -13,9 +13,8 @@ class CSDImportModule {
     toTemplete() {
         var str = ''
         this.importList.forEach((val,key)=>{
-            str+=`
-              import ${key} from './${val};\n'
-            `
+            str+=
+            `import ${key} from './${val}';\n`
           })
         // console.log(str)
         return str

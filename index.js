@@ -81,7 +81,7 @@ function CSD2String(url) {
         importlist[i] = e.split('//')[1]
     });
     console.group('CSD2String------importlist!!!!!!!!!!')
-    console.dir(importlist)
+        console.dir(importlist)
     console.groupEnd()
 
 
@@ -103,8 +103,6 @@ function CSD2String(url) {
                     // console.log('patharr!!!!!!!!!!!!!11111')
                     // console.dir(itempatharr)
                     item = itempatharr.join('/')
-
-
                     // xmpath = patharr.join('/') + '/xm/'
                 } else { //是文件
                     patharr.remove('csd')
@@ -114,7 +112,6 @@ function CSD2String(url) {
                     // console.log('patharr!!!!!!!!!!!!!22222')
                     // console.dir(itempatharr)
                     item = itempatharr.join('/')
-
                     // xmpath = patharr.join('/') + '/xm/'
                 }
                 // console.log(xmpath)
@@ -153,7 +150,7 @@ function CSD2String(url) {
         var itemarr = item.split('/') // [ 'E:', 'testcsd', 'teller-messages', 'xm', 'PC_Args.xm' ]
         itemarr.remove(path.basename(item))
         if (itemarr[itemarr.length - 1] !== 'xm') { //路径不是xm , 新建文件夹，生成文件
-            // console.group('路径不是xm')
+            // console.group('路径不是xm',item)
             // console.log(item)
             // console.log(itemarr)
             // console.groupEnd()
@@ -164,17 +161,17 @@ function CSD2String(url) {
             if (fs.existsSync(arg[1] + '/' + itemarr.join('/'))) { //有文件夹，创建文件
                 var STR = XM2String(item)
                 fs.writeFileSync(arg[1] + '/' + itemarr.join('/') + '/' + path.basename(item).split('.')[0] + '.js', STR)
-                console.log(path.basename(item) + '.js创建成功')
+                console.log(path.basename(item).split('.')[0] + '.js创建成功')
 
             } else { //没有文件夹,新建文件夹，创建文件                
                 var STR = XM2String(item)
                 // console.log(arg[1]+'/'+itemarr.join('/'))
                 fs.mkdirSync(arg[1] + '/' + itemarr.join('/'))
                 fs.writeFileSync(arg[1] + '/' + itemarr.join('/') + '/' + path.basename(item).split('.')[0] + '.js', STR)
-                console.log(path.basename(item) + '.js创建成功')
+                console.log(path.basename(item).split('.')[0] + '.js创建成功')
             }
         } else { //路径是xm  直接生成文件
-            // console.log(item)
+            // console.log('路径是xm',item)
             // console.log(2)
 
             //生成js文件内容
@@ -187,111 +184,120 @@ function CSD2String(url) {
 
     // ********************************************************************************************************************************************************
     //处理importlist,只获取.xm文件,只保留名称
-    var arr = []
-    var nodir = []
-    var hasdir = []
+    // var arr = []
+    // var nodir = []
+    // var hasdir = []
+    var csdimportmodule = new CSDImportModule()
+
     importlist.forEach(item => {
-        //划分结构
+        if(path.extname(item)==='.xm'){
+            //划分结构
         // console.log(item)
         // ['teller-messages/xm/PC_Args.xm',
-        //     'teller-messages/xm/IP_INQ_IP_TRN_I.xm',
-        //     'teller-messages/xm/XXX/x001.xm',
-        //     'teller-messages/xm/XXX/zzz.xm',
-        //     'teller-messages/xm/IP_INQ_IP_TRN_O.xm'
+        //  'teller-messages/xm/IP_INQ_IP_TRN_I.xm',
+        //  'teller-messages/xm/XXX/x001.xm',
+        //  'teller-messages/xm/XXX/zzz.xm',
+        //  'teller-messages/xm/IP_INQ_IP_TRN_O.xm'
         // ]
         if (fs.statSync(csdFile).isDirectory()) { //参数是文件夹
+            // console.log(csdFile) E:/testcsd/teller-messages/csd
             var patharr = csdFile.split('/')
-            patharr.remove('csd')
-            patharr.push('xm')
-
-            var pathurl = patharr.join('/')
-            // console.log(pathurl)
-            // console.group('patharr')
-            //     console.log(patharr) [ 'E:', 'testcsd', 'teller-messages', 'xm' ]
-
-            // console.groupEnd()
-
+            patharr.remove('csd') //E:/testcsd/teller-messages
+            // patharr.push('xm')
             var itemarr = item.split('/')
-            // itemarr.remove(path.basename(item))
-
             var arre = concat(patharr, itemarr)
+            var key = path.basename(item).split('.')[0]
+                // console.log(key)
+            for(var i=0;i<patharr.length;i++){
+                arre.remove(patharr[i])
+            }
             // console.group('arre')
-            // console.dir(arre) [ 'E:', 'testcsd', 'teller-messages', 'xm', 'PC_Args.xm' ]
-
+            //     console.log(arre)
             // console.groupEnd()
-
-            for (var i = 0; i < patharr.length; i++) {
-                arre.remove(patharr[i])
+            var arrestr = arre.join('/')
+            arrestr=arrestr.replace(path.basename(item),'')
+            if(arrestr ==='xm/'){//如果是xm根录下
+                var val = key
+                csdimportmodule.setList(val,key)
+                // console.log(csdimportmodule.importList)
+            }else{//如果不再xm根目录下
+                var str = arrestr+path.basename(item)
+                // console.log(str) xm/XXX/zzz.xm
+                var strarr = str.split('/')
+                strarr.remove('xm')
+                str = strarr.join('/')
+                var val = str.replace('.xm','')
+                // console.log(val)
+                csdimportmodule.setList(key,val)
+                // console.log(csdimportmodule.importList)
             }
-
-            if (arre.length > 1) {
-                hasdir.push(arre.join('/'))
-                // console.log(arre)
-            } else {
-                nodir.push(...arre)
-                
-            }
-
-            // arr.push(itempath)
-
         } else { //参数是文件
+            // console.log(csdFile) E:/testcsd/teller-messages/csd/csd-csd.csd
+
             var patharr = csdFile.split('/')
-            patharr.remove(path.basename(item))
+            patharr.remove(path.basename(csdFile))
             patharr.remove('csd')
-            patharr.push('xm')
+            // console.log(patharr)
             var itemarr = item.split('/')
             var arre = concat(patharr, itemarr)
-            for (var i = 0; i < patharr.length; i++) {
+            // console.log(arre)
+            var key = path.basename(item).split('.')[0]
+                // console.log(key)
+            for(var i=0;i<patharr.length;i++){
                 arre.remove(patharr[i])
             }
-
-            if (arre.length > 1) {
-                hasdir.push(arre.join('/'))
-                // console.log(arre)
-            } else {
-                nodir.push(...arre)
-                
+            // console.group('arre')
+            //     console.log(arre)
+            // console.groupEnd()
+            var arrestr = arre.join('/')
+            arrestr=arrestr.replace(path.basename(item),'')
+            if(arrestr ==='xm/'){//如果是xm根录下
+                var val = key
+                csdimportmodule.setList(val,key)
+                // console.log(csdimportmodule.importList)
+            }else{//如果不再xm根目录下
+                var str = arrestr+path.basename(item)
+                // console.log(str) xm/XXX/zzz.xm
+                var strarr = str.split('/')
+                strarr.remove('xm')
+                str = strarr.join('/')
+                var val = str.replace('.xm','')
+                // console.log(val)
+                csdimportmodule.setList(key,val)
+                // console.log(csdimportmodule.importList)
             }
         }
 
-
+        }
+        
         // if (path.extname(item) === '.xm') {
         //     item = path.basename(item).split('.')[0]
         //     // console.log(item)
         //     arr.push(item)
-        // }
-        
+        // }        
 
-        return arr
     })
-    hasdir.forEach(i=>{
-        arr[path.basename(i).split('.')[0]] = i
-    })
-    arr.push(...nodir)
-    console.log(arr)
-
-    arr.forEach((val,key)=>{
-        // console.log(key)
-        // console.log(val)
-    })
-
-    // console.group('111111111')
-    //     console.log(arr)
-    // console.groupEnd()
-
-    // console.log(importlist)
+    
 
     // ********************************************************************************************************************************************************
-    var csdimportmodule = new CSDImportModule()
+
+    
+    
+    // csdimportmodule.setList(arr)
 
 
-    csdimportmodule.setList(arr)
+    var importStr = csdimportmodule.toTemplete()
+    // var importmodule = new ImportModule()
+    // importmodule.setList(arr)
 
     // console.group('importmodule.importList')
     // console.log(importmodule.importList)
     // console.groupEnd()
 
-    var importStr = csdimportmodule.toTemplete()
+    
+    
+
+    // var importStr = importmodule.toTemplete()
     // console.log(importStr)
 
     // var exportmodule = new ExportModule()

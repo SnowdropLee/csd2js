@@ -129,13 +129,14 @@ class CSDExportModule {
         class Responsecontent{
             constructor(){`
         this.responseXMList.forEach(item=>{
-            str+=`
-                this.${item} = new ${item}();\n
+            str+=
+            `
+            this.${item} = new ${item}();\n
             `
         })
         this.responseADEList.forEach(item=>{
             str+=`
-                this.${item} = null;\n
+            this.${item} = null;\n
             `
         })
         str += `}};\n`
